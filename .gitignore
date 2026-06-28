@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.cache/
+
+# Personal local Claude Code overrides (keep project docs under .claude/ tracked)
+.claude/settings.local.json
