@@ -1,0 +1,31 @@
+{
+  "names": [
+    "crossenv",
+    "cross-env.js",
+    "mongose",
+    "momnet",
+    "nodejs-encrypt",
+    "discordapp.js",
+    "fabric-js",
+    "node-fabric",
+    "jquery.js",
+    "babelcli",
+    "ffmepg",
+    "gruntcli",
+    "http-proxy.js",
+    "mssql.js",
+    "mssql-node",
+    "mysqljs",
+    "nodefabric",
+    "nodemailer-js",
+    "nodemailer.js",
+    "noderequest",
+    "nodesass",
+    "nodesqlite",
+    "sqlite.js",
+    "sqliter",
+    "sqlserver",
+    "shadowsocks"
+  ],
+  "patterns": []
+}
