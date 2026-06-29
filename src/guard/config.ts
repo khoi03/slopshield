@@ -24,7 +24,7 @@ function asStringArray(value: unknown): string[] {
 }
 
 /**
- * Merge a raw `slopcheck` config field with CLI flags into a validated
+ * Merge a raw `slopshield` config field with CLI flags into a validated
  * `GuardConfig`. Pure. Invalid field values fall back to defaults (fail-open),
  * and CLI flags always win over the file.
  */
@@ -49,7 +49,7 @@ export function mergeGuardConfig(field: unknown, flags: GuardFlags): GuardConfig
 }
 
 /**
- * Read `package.json#slopcheck` from `cwd` and merge it with CLI flags. A
+ * Read `package.json#slopshield` from `cwd` and merge it with CLI flags. A
  * missing or malformed manifest falls back to defaults (never throws).
  */
 export async function resolveGuardConfig(

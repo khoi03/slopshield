@@ -1,5 +1,5 @@
 /**
- * Core types for the Slopcheck detection engine.
+ * Core types for the Slopshield detection engine.
  *
  * This module is types-only: it emits no runtime code and is excluded from
  * coverage. Keep all runtime constants in `config.ts`.
@@ -10,7 +10,7 @@ export type RiskLevel = 'safe' | 'medium' | 'high' | 'critical';
 
 /**
  * A verdict may also be `unknown` when registry data could not be retrieved.
- * Slopcheck is fail-open: an `unknown` is surfaced as a warning and never
+ * Slopshield is fail-open: an `unknown` is surfaced as a warning and never
  * blocks (it is treated as neither safe nor risky for exit-code purposes).
  */
 export type Verdict = RiskLevel | 'unknown';
@@ -102,7 +102,7 @@ export interface ParsedInstall {
   readonly global: boolean;
 }
 
-/** Resolved guard policy (from `package.json#slopcheck` merged with CLI flags). */
+/** Resolved guard policy (from `package.json#slopshield` merged with CLI flags). */
 export interface GuardConfig {
   readonly mode: GuardMode;
   readonly failOn: FailOn;

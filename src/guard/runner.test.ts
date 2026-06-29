@@ -8,7 +8,7 @@ function analysis(name: string, level: Verdict): PackageAnalysis {
   return { name, level, score: 0, reasons: [`reason-${level}`], signals: [] };
 }
 
-const noConfigFile = async (): Promise<string> => '{}'; // no slopcheck field ⇒ defaults
+const noConfigFile = async (): Promise<string> => '{}'; // no slopshield field ⇒ defaults
 const silent = (): void => {};
 
 test('runGuard: block mode returns non-zero for a critical package', async () => {

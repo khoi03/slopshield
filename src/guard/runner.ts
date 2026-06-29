@@ -128,7 +128,7 @@ export async function runInstall(
   report(decision, unchecked, log);
 
   if (decision.action === 'block') {
-    log('Install blocked. Allowlist the package (package.json#slopcheck) or adjust --fail-on to override.');
+    log('Install blocked. Allowlist the package (package.json#slopshield) or adjust --fail-on to override.');
     return EXIT_BLOCKED;
   }
 

@@ -8,7 +8,7 @@
  *
  *   npm run build:data
  *
- * Source can be overridden with the SLOPCHECK_POPULAR_SOURCE env var. The
+ * Source can be overridden with the SLOPSHIELD_POPULAR_SOURCE env var. The
  * source must return either a JSON array of name strings, or a JSON array of
  * objects each having a `name` (string) field.
  */
@@ -42,7 +42,7 @@ function extractNames(payload: unknown): string[] {
 }
 
 async function main(): Promise<void> {
-  const source = process.env['SLOPCHECK_POPULAR_SOURCE'] ?? DEFAULT_SOURCE;
+  const source = process.env['SLOPSHIELD_POPULAR_SOURCE'] ?? DEFAULT_SOURCE;
   console.log(`Fetching popular package names from: ${source}`);
 
   const response = await fetch(source);

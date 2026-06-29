@@ -36,9 +36,9 @@ test('mergeGuardConfig ignores invalid field values (fail-open to defaults)', ()
   assert.equal(c.allow.size, 0);
 });
 
-test('resolveGuardConfig reads package.json#slopcheck via injected readFile', async () => {
+test('resolveGuardConfig reads package.json#slopshield via injected readFile', async () => {
   const readFile = async (): Promise<string> =>
-    JSON.stringify({ slopcheck: { mode: 'block', allow: ['foo'] } });
+    JSON.stringify({ slopshield: { mode: 'block', allow: ['foo'] } });
   const c = await resolveGuardConfig({}, readFile);
   assert.equal(c.mode, 'block');
   assert.ok(c.allow.has('foo'));
