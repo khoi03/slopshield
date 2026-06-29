@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test & build (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The test suite imports .ts sources via Node's type-stripping, which is
+        # unflagged from Node 23.6+. Run it on the current line.
+        node: [24.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  runtime-smoke:
+    name: Built CLI runs on Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The published bundle (dist/cli.js) must run on the supported floor.
+        node: [18.x, 20.x]
+    steps:
+      - uses: actions/checkout@v4
+      # Build with a recent Node (type-stripping needs 23.6+)...
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # ...then prove the bundle runs on the supported floor.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Smoke-test the bundle (no network)
+        run: |
+          node --version
+          node dist/cli.js --version
+          node dist/cli.js --help
+          node dist/cli.js init-shell bash
