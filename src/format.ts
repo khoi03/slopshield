@@ -1,7 +1,13 @@
-import type { FailOn, PackageAnalysis, RiskLevel, Verdict } from './types.ts';
+import type {
+  FailOn,
+  GuardDecision,
+  PackageAnalysis,
+  RiskLevel,
+  Verdict,
+} from './types.ts';
 
-/** Severity ranking used for the `--fail-on` exit-code gate. */
-const RISK_ORDER: Record<RiskLevel, number> = {
+/** Severity ranking used for the `--fail-on` exit-code gate and guard decisions. */
+export const RISK_ORDER: Record<RiskLevel, number> = {
   safe: 0,
   medium: 1,
   high: 2,
@@ -52,4 +58,29 @@ function formatOne(analysis: PackageAnalysis): string {
 /** Render analyses as a pretty-printed JSON array (machine-readable output). */
 export function formatJson(analyses: readonly PackageAnalysis[]): string {
   return JSON.stringify(analyses, null, 2);
+}
+
+/**
+ * Render a guard decision for humans. Returns '' when nothing was flagged, so a
+ * safe install stays completely silent.
+ */
+export function formatGuard(decision: GuardDecision): string {
+  const lines = [
+    ...decision.blocked.map((a) => renderFlagged('✖', a)),
+    ...decision.warned.map((a) => renderFlagged('!', a)),
+  ];
+  if (lines.length === 0) return '';
+
+  const summary =
+    decision.action === 'block'
+      ? `Blocked ${decision.blocked.length} package(s); ${decision.warned.length} warning(s).`
+      : `${decision.warned.length} warning(s).`;
+  return [...lines, '', summary].join('\n');
+}
+
+function renderFlagged(marker: string, analysis: PackageAnalysis): string {
+  const head = `${marker} ${analysis.name} — ${analysis.level}`;
+  if (analysis.reasons.length === 0) return head;
+  const body = analysis.reasons.map((reason) => `    • ${reason}`).join('\n');
+  return `${head}\n${body}`;
 }
