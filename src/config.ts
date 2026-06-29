@@ -65,6 +65,9 @@ export const MEDIUM_SCORE_THRESHOLD = 20;
 /** Default exit-code gate: fail the run on `high` or `critical`. */
 export const DEFAULT_FAIL_ON: FailOn = 'high';
 
+/** Accepted `--fail-on` values (the risk levels plus `none`). */
+export const VALID_FAIL_ON: readonly string[] = ['safe', 'medium', 'high', 'critical', 'none'];
+
 /** Maximum concurrent registry lookups during a batch scan. */
 export const MAX_CONCURRENCY = 8;
 
@@ -76,8 +79,8 @@ export const DEFAULT_GUARD_MODE: GuardMode = 'warn';
 /** Manifest file the guard reads policy from. */
 export const PACKAGE_JSON_FILE = 'package.json';
 
-/** Field within package.json holding guard config: `{ "slopcheck": { … } }`. */
-export const CONFIG_FIELD = 'slopcheck';
+/** Field within package.json holding guard config: `{ "slopshield": { … } }`. */
+export const CONFIG_FIELD = 'slopshield';
 
 /** npm subcommands that install new packages (used by routing + shell integration). */
 export const INSTALL_SUBCOMMANDS = ['install', 'i', 'add'] as const;
