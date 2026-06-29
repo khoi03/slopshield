@@ -1,0 +1,36 @@
+# Curated legitimate top packages for slopshield false-positive validation.
+# None of these should be flagged at >= high (the default gate).
+express
+react
+react-dom
+lodash
+vue
+axios
+typescript
+eslint
+webpack
+next
+jest
+vitest
+chalk
+commander
+zod
+prettier
+rollup
+vite
+debug
+classnames
+dotenv
+cors
+body-parser
+dayjs
+uuid
+semver
+glob
+rimraf
+fs-extra
+yargs
+node-fetch
+ws
+react-redux
+tailwindcss

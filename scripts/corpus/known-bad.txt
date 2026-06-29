@@ -1,0 +1,22 @@
+# Curated known-bad corpus for slopshield validation.
+# Every name here should be flagged at >= high (the default gate).
+# Two kinds: documented typosquats from the known-slop seed, and clearly
+# nonexistent hallucination-style names (which resolve to "critical").
+# The npm registry is live — refresh this list if a name's status changes.
+
+# Documented typosquats (known-slop seed -> high)
+crossenv
+mongose
+momnet
+babelcli
+ffmepg
+gruntcli
+nodesass
+jquery.js
+
+# Nonexistent hallucination-style names (-> critical)
+react-async-hyperstore-provider-x9qz
+express-turbo-middleware-suite-zzq7
+lodash-extended-superutils-pack-7k3
+vue-mega-composable-toolkit-qf2x
+typescript-strict-helper-bundle-9000z
