@@ -11,6 +11,9 @@ const DEPENDENCY_FIELDS = [
 /** A function that reads a file's text content (injectable for tests). */
 export type ReadFile = (path: string) => Promise<string>;
 
+/** Default reader: UTF-8 text (so callers get a string, not a Buffer). */
+export const defaultReadFile: ReadFile = (path) => fsReadFile(path, 'utf8');
+
 /** Collect dependency names from a parsed package.json, de-duplicated in order. */
 export function extractNamesFromPackageJson(json: unknown): string[] {
   if (typeof json !== 'object' || json === null) return [];
@@ -53,7 +56,7 @@ export function parseFileContent(text: string): string[] {
 }
 
 /** Read and parse names from a file path. */
-export async function readFileNames(path: string, readFile: ReadFile = fsReadFile): Promise<string[]> {
+export async function readFileNames(path: string, readFile: ReadFile = defaultReadFile): Promise<string[]> {
   return parseFileContent(await readFile(path));
 }
 
@@ -65,7 +68,7 @@ export interface InputOptions {
 /** Merge positional names with any file-derived names, de-duplicated in order. */
 export async function resolveInputs(
   options: InputOptions,
-  readFile: ReadFile = fsReadFile,
+  readFile: ReadFile = defaultReadFile,
 ): Promise<string[]> {
   const names = new Set<string>(options.positional);
   if (options.file !== undefined) {

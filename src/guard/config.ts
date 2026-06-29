@@ -1,4 +1,3 @@
-import { readFile as fsReadFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import {
@@ -8,7 +7,7 @@ import {
   PACKAGE_JSON_FILE,
 } from '../config.ts';
 import type { FailOn, GuardConfig, GuardMode } from '../types.ts';
-import type { ReadFile } from '../inputs.ts';
+import { defaultReadFile, type ReadFile } from '../inputs.ts';
 
 const VALID_MODES: readonly string[] = ['warn', 'block'];
 const VALID_FAIL_ON: readonly string[] = ['safe', 'medium', 'high', 'critical', 'none'];
@@ -55,7 +54,7 @@ export function mergeGuardConfig(field: unknown, flags: GuardFlags): GuardConfig
  */
 export async function resolveGuardConfig(
   flags: GuardFlags,
-  readFile: ReadFile = fsReadFile,
+  readFile: ReadFile = defaultReadFile,
   cwd: string = process.cwd(),
 ): Promise<GuardConfig> {
   const field = await readConfigField(join(cwd, PACKAGE_JSON_FILE), readFile);
