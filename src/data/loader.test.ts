@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 
 import { loadKnownSlop, loadPopular } from './loader.ts';
 import { analyzePackage } from '../analyzer.ts';
-import type { RegistryClient, RegistryMetadata } from '../types.ts';
+import type { RegistryClient } from '../registry/client.ts';
+import type { RegistryMetadata } from '../types.ts';
 
 test('loadPopular returns a non-empty set including well-known packages', () => {
   const popular = loadPopular();
