@@ -5,7 +5,7 @@
  * Everything that decides "how aggressive are we" lives here and nowhere else.
  */
 
-import type { FailOn, SignalId } from './types.ts';
+import type { FailOn, GuardMode, SignalId } from './types.ts';
 
 // --- Heuristic thresholds ---------------------------------------------------
 
@@ -67,3 +67,22 @@ export const DEFAULT_FAIL_ON: FailOn = 'high';
 
 /** Maximum concurrent registry lookups during a batch scan. */
 export const MAX_CONCURRENCY = 8;
+
+// --- Install guard (Milestone 2) --------------------------------------------
+
+/** Default guard posture: warn with clear reasons; blocking is opt-in (per PRD). */
+export const DEFAULT_GUARD_MODE: GuardMode = 'warn';
+
+/** Manifest file the guard reads policy from. */
+export const PACKAGE_JSON_FILE = 'package.json';
+
+/** Field within package.json holding guard config: `{ "slopcheck": { … } }`. */
+export const CONFIG_FIELD = 'slopcheck';
+
+/** npm subcommands that install new packages (used by routing + shell integration). */
+export const INSTALL_SUBCOMMANDS = ['install', 'i', 'add'] as const;
+
+/** Process exit codes. */
+export const EXIT_OK = 0;
+export const EXIT_BLOCKED = 1;
+export const EXIT_USAGE = 2;

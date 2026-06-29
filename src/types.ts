@@ -75,3 +75,47 @@ export interface PackageAnalysis {
   /** Every evaluated signal, in evaluation order (for `--json` consumers). */
   readonly signals: readonly Signal[];
 }
+
+// --- Install guard (Milestone 2) --------------------------------------------
+
+/** Guard posture: `warn` (proceed after notice/confirm) or `block` (refuse risky installs). */
+export type GuardMode = 'warn' | 'block';
+
+/** Classification of an install specifier. Only `registry` names are checkable. */
+export type SpecifierKind = 'registry' | 'git' | 'url' | 'file' | 'alias';
+
+/** A parsed install specifier (e.g. `express@^4`, `@scope/pkg`, `git+https://…`). */
+export interface Specifier {
+  /** The original token as typed. */
+  readonly raw: string;
+  /** Bare package name with version/tag stripped (scope retained). */
+  readonly name: string;
+  readonly kind: SpecifierKind;
+  /** True only when `name` is a registry package we can analyze. */
+  readonly checkable: boolean;
+}
+
+/** Result of parsing an `npm install …` argument list. */
+export interface ParsedInstall {
+  readonly specifiers: readonly Specifier[];
+  /** True if the install targets the global prefix (`-g` / `--global`). */
+  readonly global: boolean;
+}
+
+/** Resolved guard policy (from `package.json#slopcheck` merged with CLI flags). */
+export interface GuardConfig {
+  readonly mode: GuardMode;
+  readonly failOn: FailOn;
+  /** Package names exempt from flagging. */
+  readonly allow: ReadonlySet<string>;
+}
+
+/** Decision produced by the guard for a set of analyzed packages. Immutable. */
+export interface GuardDecision {
+  /** `block` ⇒ refuse to install; `allow` ⇒ proceed (possibly after a warning/confirm). */
+  readonly action: 'allow' | 'block';
+  /** Packages meeting the block threshold (block mode only). */
+  readonly blocked: readonly PackageAnalysis[];
+  /** Risky packages surfaced as warnings (never block the run). */
+  readonly warned: readonly PackageAnalysis[];
+}
