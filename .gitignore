@@ -5,5 +5,5 @@ coverage/
 .DS_Store
 .cache/
 
-# Personal local Claude Code overrides (keep project docs under .claude/ tracked)
-.claude/settings.local.json
+# Claude Code working docs (PRD, plans, reviews, evidence) — kept local, not published
+.claude/
