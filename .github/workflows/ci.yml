@@ -20,8 +20,8 @@ jobs:
         # unflagged from Node 23.6+. Run it on the current line.
         node: [24.x]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: npm
@@ -39,16 +39,16 @@ jobs:
         # The published bundle (dist/cli.js) must run on the supported floor.
         node: [18.x, 20.x]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # Build with a recent Node (type-stripping needs 23.6+)...
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24.x
           cache: npm
       - run: npm ci
       - run: npm run build
       # ...then prove the bundle runs on the supported floor.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
       - name: Smoke-test the bundle (no network)

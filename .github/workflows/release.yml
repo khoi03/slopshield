@@ -1,9 +1,9 @@
 name: Release
 
 # Publishes to npm when a version tag is pushed (e.g. `git tag v0.1.0 && git push --tags`).
-# Inert until an NPM_TOKEN secret is configured in the repository settings — the
-# publish step is skipped when the token is absent, so the workflow never fails
-# a tag push before the maintainer opts in.
+# Authenticates via npm Trusted Publishing (OIDC) — no NPM_TOKEN secret required.
+# Requires a Trusted Publisher configured for this package on npmjs.com
+# (repo: khoi03/slopshield, workflow: release.yml).
 on:
   push:
     tags:
@@ -11,27 +11,21 @@ on:
 
 permissions:
   contents: read
-  id-token: write # required for npm provenance
+  id-token: write # required for Trusted Publishing (OIDC) and provenance
 
 jobs:
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
-    env:
-      HAS_NPM_TOKEN: ${{ secrets.NPM_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24.x
           registry-url: https://registry.npmjs.org
           cache: npm
       - run: npm ci
-      - name: Publish to npm (prepublishOnly runs typecheck, test, build)
-        if: ${{ env.HAS_NPM_TOKEN == 'true' }}
+      # Trusted Publishing requires a recent npm (>= 11.5.1).
+      - run: npm install -g npm@latest
+      - name: Publish to npm (Trusted Publishing + provenance)
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Skip notice
-        if: ${{ env.HAS_NPM_TOKEN != 'true' }}
-        run: echo "NPM_TOKEN secret not set — skipping publish. Add it in repo settings → Secrets to enable releases."
