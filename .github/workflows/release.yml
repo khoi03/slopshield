@@ -27,7 +27,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: npm
       - run: npm ci
-      - name: Publish (runs prepublishOnly: typecheck + test + build)
+      - name: Publish to npm (prepublishOnly runs typecheck, test, build)
         if: ${{ env.HAS_NPM_TOKEN == 'true' }}
         run: npm publish --provenance --access public
         env:
