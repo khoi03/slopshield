@@ -6,6 +6,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Colored output** — human-readable scan and guard output is now color-coded by
+  verdict (green `safe`, yellow `medium`, red `high`, bold-red `critical`, dim
+  `unknown`), with reasons dimmed. Color is emitted only to a terminal and honors
+  `--no-color`, `NO_COLOR`, and `FORCE_COLOR` (precedence: `--no-color` >
+  `FORCE_COLOR` > `NO_COLOR` > TTY). `--json` output stays 100% plain. Still zero
+  runtime dependencies (hand-rolled ANSI).
+
 ## [0.1.0] - 2026-06-30
 
 Initial public release.

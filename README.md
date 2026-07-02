@@ -72,12 +72,15 @@ slopshield expresss --fail-on medium       # exit 1 on medium or above
 | Option | Description |
 |---|---|
 | `--file <path>` | Read names from a `package.json` or a newline-delimited list |
-| `--json` | Output a JSON array of verdicts |
+| `--json` | Output a JSON array of verdicts (always plain, never colored) |
 | `--fail-on <level>` | Exit non-zero at this level or above: `safe`\|`medium`\|`high`\|`critical`\|`none` (default `high`) |
+| `--no-color` | Disable ANSI color |
 | `--version` | Print the installed version |
 | `--help` | Show help |
 
 **Exit codes:** `0` = nothing at/above the fail-on level; `1` = a risky package was found; `2` = usage error. `unknown` verdicts never fail the run.
+
+**Colored output:** verdicts are color-coded (green `safe` → yellow `medium` → red `high` → bold-red `critical` → dim `unknown`) when writing to a terminal. Color is auto-disabled when output is piped or redirected, and honors the [`NO_COLOR`](https://no-color.org) and `FORCE_COLOR` environment variables plus the `--no-color` flag (precedence: `--no-color` > `FORCE_COLOR` > `NO_COLOR` > TTY). `--json` is always plain.
 
 ## Install guard
 
