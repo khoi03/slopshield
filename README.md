@@ -7,6 +7,8 @@
 [![node](https://img.shields.io/node/v/slopshield.svg)](https://nodejs.org)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
+![slopshield in action](./demo.gif)
+
 AI coding assistants routinely suggest packages that don't exist (~1 in 5 recommendations) or are lookalikes of real ones. Because the hallucinated names recur, attackers pre-register them ("slopsquatting") so the install pulls malware. Dependabot and Snyk only catch *known-vulnerable, known* packages — they're blind to *nonexistent-but-soon-malicious* names. slopshield fills that gap with fast heuristics over public npm registry data, and — unlike static scanners that read your files after the fact — it can intercept the install **before the package lands**.
 
 ```bash
