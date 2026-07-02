@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 
 import { analyzeNames } from '../analyzer.ts';
+import { createPalette, shouldColorize, type Palette } from '../color.ts';
 import { EXIT_BLOCKED, EXIT_OK, EXIT_USAGE } from '../config.ts';
 import { loadKnownSlop, loadPopular } from '../data/loader.ts';
 import { formatGuard } from '../format.ts';
@@ -28,12 +29,25 @@ export interface GuardDeps {
   readonly cwd?: string;
   readonly now?: number;
   readonly log?: (message: string) => void;
+  /** Colorizer for reported output. Defaults to the stderr TTY palette. */
+  readonly palette?: Palette;
 }
 
 const defaultLog = (message: string): void => {
   // Guard output goes to stderr so it never pollutes piped stdout / JSON.
   console.error(message);
 };
+
+/**
+ * Palette used when a caller does not inject one. Guard writes to stderr, so the
+ * color decision follows the stderr TTY (the CLI injects a `--no-color`-aware
+ * palette explicitly).
+ */
+function defaultPalette(): Palette {
+  return createPalette(
+    shouldColorize({ isTTY: Boolean(process.stderr.isTTY), noColorFlag: false, env: process.env }),
+  );
+}
 
 function defaultAnalyze(now?: number): Analyze {
   return (names) =>
@@ -88,11 +102,12 @@ function report(
   decision: GuardDecision,
   unchecked: readonly string[],
   log: (message: string) => void,
+  palette: Palette,
 ): void {
-  const text = formatGuard(decision);
+  const text = formatGuard(decision, palette);
   if (text) log(text);
   if (unchecked.length > 0) {
-    log(`Skipped (not a registry package, unchecked): ${unchecked.join(', ')}`);
+    log(palette.dim(`Skipped (not a registry package, unchecked): ${unchecked.join(', ')}`));
   }
 }
 
@@ -108,7 +123,7 @@ export async function runGuard(
 ): Promise<number> {
   const specifiers = rawSpecifiers.map(normalizeSpecifier);
   const { decision, unchecked } = await evaluate(specifiers, flags, deps);
-  report(decision, unchecked, deps.log ?? defaultLog);
+  report(decision, unchecked, deps.log ?? defaultLog, deps.palette ?? defaultPalette());
   return decision.action === 'block' ? EXIT_BLOCKED : EXIT_OK;
 }
 
@@ -123,9 +138,10 @@ export async function runInstall(
   deps: GuardDeps = {},
 ): Promise<number> {
   const log = deps.log ?? defaultLog;
+  const palette = deps.palette ?? defaultPalette();
   const { specifiers } = parseInstallArgs(argv);
   const { decision, unchecked, config } = await evaluate(specifiers, flags, deps);
-  report(decision, unchecked, log);
+  report(decision, unchecked, log, palette);
 
   if (decision.action === 'block') {
     log('Install blocked. Allowlist the package (package.json#slopshield) or adjust --fail-on to override.');
