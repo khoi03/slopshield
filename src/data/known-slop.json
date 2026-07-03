@@ -25,7 +25,9 @@
     "sqlite.js",
     "sqliter",
     "sqlserver",
-    "shadowsocks"
+    "shadowsocks",
+    "nodetensorflow",
+    "react-codeshift"
   ],
   "patterns": []
 }

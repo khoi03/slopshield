@@ -13,6 +13,10 @@ ffmepg
 gruntcli
 nodesass
 jquery.js
+# nodetensorflow: 2017 "hacktask" typosquat batch (npm blog / The Register); currently unregistered
+nodetensorflow
+# react-codeshift: documented AI hallucination (USENIX 2025 / aikido.dev) — jscodeshift x react-codemod mashup
+react-codeshift
 
 # Nonexistent hallucination-style names (-> critical)
 react-async-hyperstore-provider-x9qz
