@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Corpus growth** — added vetted, publicly-documented slop names to the
+  known-slop seed (`nodetensorflow` from the 2017 typosquat batch;
+  `react-codeshift`, a documented AI hallucination) and expanded the validation
+  false-positive guardrail from 34 to 230 real popular packages. `npm run
+  validate` holds at 100% recall / 0% false positives. Candidates were vetted
+  against the live registry so no currently-legitimate name (e.g. `mariadb`) was
+  added.
 - **GitHub Action** — a composite action (`khoi03/slopshield@v1`) lets teams add
   slopshield to CI in a few lines; it scans `package.json` (or explicit
   `packages`) and fails the job at/above `fail-on`. Inputs: `file`, `packages`,
