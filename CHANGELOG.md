@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Scan summary + `--quiet`** — multi-package scans (and any `--quiet` run) now
+  end with a one-line tally, e.g. `5 checked — 1 critical, 2 high, 1 medium`
+  (`all safe` when clean), colored by level. `--quiet` prints only flagged
+  packages (hides `safe`, keeps `unknown`) plus the summary — ideal for CI logs.
+  `--json` is unaffected (full set, no footer) and the exit code is always
+  computed over every package.
 - **Colored output** — human-readable scan and guard output is now color-coded by
   verdict (green `safe`, yellow `medium`, red `high`, bold-red `critical`, dim
   `unknown`), with reasons dimmed. Color is emitted only to a terminal and honors
