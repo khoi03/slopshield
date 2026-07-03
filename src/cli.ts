@@ -12,7 +12,7 @@ import {
   VALID_FAIL_ON,
 } from './config.ts';
 import { loadKnownSlop, loadPopular } from './data/loader.ts';
-import { deriveExitCode, formatHuman, formatJson } from './format.ts';
+import { deriveExitCode, flaggedAnalyses, formatHuman, formatJson, formatSummary } from './format.ts';
 import { parseGuardArgs } from './guard/guard-args.ts';
 import { runGuard, runInstall } from './guard/runner.ts';
 import { shellInitSnippet, type SupportedShell } from './guard/shell-init.ts';
@@ -34,6 +34,7 @@ Usage:
 Options (scan/guard):
   --file <path>      (scan) read names from a package.json or newline list
   --json             (scan) machine-readable JSON output
+  --quiet            (scan) print only flagged packages, plus a summary line
   --fail-on <level>  exit non-zero at this level or above: safe|medium|high|critical|none (default ${DEFAULT_FAIL_ON})
   --block            (guard) block risky packages instead of warning
   --allow <name>     (guard) exempt a package by name (repeatable)
@@ -61,6 +62,7 @@ async function runScan(args: readonly string[], noColorFlag: boolean): Promise<n
     options: {
       file: { type: 'string' },
       json: { type: 'boolean', default: false },
+      quiet: { type: 'boolean', default: false },
       'fail-on': { type: 'string' },
       help: { type: 'boolean', default: false },
     },
@@ -89,10 +91,22 @@ async function runScan(args: readonly string[], noColorFlag: boolean): Promise<n
     popular: loadPopular(),
     knownSlop: loadKnownSlop(),
   });
-  // JSON output stays 100% plain; human output colors against stdout's TTY.
-  console.log(
-    values.json ? formatJson(analyses) : formatHuman(analyses, paletteFor(process.stdout, noColorFlag)),
-  );
+  // JSON output stays 100% plain and complete (no footer / filtering).
+  if (values.json) {
+    console.log(formatJson(analyses));
+    return deriveExitCode(analyses, failOn);
+  }
+
+  // Human output colors against stdout's TTY. `--quiet` prints only flagged
+  // packages; a summary footer is added for multi-package scans or in --quiet.
+  const palette = paletteFor(process.stdout, noColorFlag);
+  const visible = values.quiet ? flaggedAnalyses(analyses) : analyses;
+  const showFooter = values.quiet || analyses.length > 1;
+  const body = formatHuman(visible, palette);
+  const footer = showFooter ? formatSummary(analyses, palette) : '';
+  console.log([body, footer].filter(Boolean).join('\n\n'));
+
+  // Exit code is always derived from the full result set, never the filtered view.
   return deriveExitCode(analyses, failOn);
 }
 
