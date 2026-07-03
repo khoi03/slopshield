@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **GitHub Action** — a composite action (`khoi03/slopshield@v1`) lets teams add
+  slopshield to CI in a few lines; it scans `package.json` (or explicit
+  `packages`) and fails the job at/above `fail-on`. Inputs: `file`, `packages`,
+  `fail-on`, `quiet`, `version`, `working-directory`. Runs the published CLI via
+  `npx`; inputs are passed through the environment (no shell interpolation) to
+  avoid expression injection. Dogfooded by a CI self-test.
+
 - **Scan summary + `--quiet`** — multi-package scans (and any `--quiet` run) now
   end with a one-line tally, e.g. `6 checked — 1 critical, 2 high, 1 medium, 2 safe`
   (`all safe` when clean), colored by level. `--quiet` prints only flagged

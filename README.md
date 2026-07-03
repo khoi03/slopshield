@@ -119,6 +119,40 @@ eval "$(slopshield init-shell zsh)"        # add to ~/.zshrc  (supports bash|zsh
 - Non-registry specifiers (git/url/file) and unparseable args pass through **unchecked** (fail-open).
 - **Not a sandbox:** the guard blocks risky *names* before install; it does not sandbox a safe package's lifecycle scripts. npm-only for now (`guard` works for any package manager via shell integration).
 
+## GitHub Action
+
+Add slopshield to CI in a few lines — it fails the job when a risky package is found:
+
+```yaml
+name: slopshield
+on: [pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  slopshield:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: khoi03/slopshield@v1
+        with:
+          fail-on: high        # exit non-zero at this level or above
+```
+
+By default it scans `package.json` and prints only flagged packages plus a summary.
+
+| Input | Default | Description |
+|---|---|---|
+| `file` | `package.json` | Manifest or newline list to scan (ignored when `packages` is set) |
+| `packages` | — | Space-separated package names to scan instead of a file |
+| `fail-on` | `high` | Exit non-zero at this level or above: `safe`\|`medium`\|`high`\|`critical`\|`none` |
+| `quiet` | `true` | Print only flagged packages plus the summary line |
+| `version` | `latest` | slopshield version to run (pin for reproducible CI, e.g. `0.2.0`) |
+| `working-directory` | `.` | Directory to run the scan in |
+
+The action runs the published CLI via `npx` (no extra install). Pin `version` for reproducible runs.
+
 ## Development
 
 ```bash
