@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-04
+
 ### Added
 
 - **Corpus growth** — added vetted, publicly-documented slop names to the
@@ -15,7 +17,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   validate` holds at 100% recall / 0% false positives. Candidates were vetted
   against the live registry so no currently-legitimate name (e.g. `mariadb`) was
   added.
-- **GitHub Action** — a composite action (`khoi03/slopshield@v1`) lets teams add
+- **GitHub Action** — a composite action (`khoi03/slopshield@v0.2.0`) lets teams add
   slopshield to CI in a few lines; it scans `package.json` (or explicit
   `packages`) and fails the job at/above `fail-on`. Inputs: `file`, `packages`,
   `fail-on`, `quiet`, `version`, `working-directory`. Runs the published CLI via
@@ -58,5 +60,6 @@ Initial public release.
 - Zero runtime dependencies; fail-open on registry errors (never a false
   "safe").
 
-[Unreleased]: https://github.com/khoi03/slopshield/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/khoi03/slopshield/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/khoi03/slopshield/compare/v0.1.1...v0.2.0
 [0.1.0]: https://github.com/khoi03/slopshield/releases/tag/v0.1.0
