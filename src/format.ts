@@ -90,6 +90,49 @@ function formatReasons(reasons: readonly string[], palette: Palette): string {
   return reasons.map((reason) => palette.dim(`    • ${reason}`)).join('\n');
 }
 
+/** Verdicts worth surfacing: everything except a clean `safe`. */
+export function flaggedAnalyses(
+  analyses: readonly PackageAnalysis[],
+): readonly PackageAnalysis[] {
+  return analyses.filter((analysis) => analysis.level !== 'safe');
+}
+
+/** Risk buckets shown in the summary, in the order they are listed. */
+const SUMMARY_LEVELS: readonly RiskLevel[] = ['critical', 'high', 'medium'];
+
+/**
+ * One-line tally for the end of a scan, e.g. `5 checked — 1 critical, 2 high`.
+ * Zero buckets are omitted; `unknown` is reported separately (dimmed); a clean
+ * run reads `N checked — all safe`. Plain by default so `--json` is unaffected.
+ */
+export function formatSummary(
+  analyses: readonly PackageAnalysis[],
+  palette: Palette = plainPalette,
+): string {
+  const counts = tallyLevels(analyses);
+  const parts = SUMMARY_LEVELS.filter((level) => counts[level] > 0).map((level) =>
+    levelPaint(palette, level)(`${counts[level]} ${level}`),
+  );
+  if (counts.unknown > 0) parts.push(palette.dim(`${counts.unknown} unknown`));
+
+  const head = palette.dim(`${analyses.length} checked`);
+  const tail = parts.length > 0 ? parts.join(', ') : palette.green('all safe');
+  return `${head} — ${tail}`;
+}
+
+/** Count analyses per verdict. */
+function tallyLevels(analyses: readonly PackageAnalysis[]): Record<Verdict, number> {
+  const counts: Record<Verdict, number> = {
+    safe: 0,
+    medium: 0,
+    high: 0,
+    critical: 0,
+    unknown: 0,
+  };
+  for (const analysis of analyses) counts[analysis.level]++;
+  return counts;
+}
+
 /** Render analyses as a pretty-printed JSON array (machine-readable output). */
 export function formatJson(analyses: readonly PackageAnalysis[]): string {
   return JSON.stringify(analyses, null, 2);
