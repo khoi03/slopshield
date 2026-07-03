@@ -1,0 +1,76 @@
+name: slopshield
+description: Block AI-hallucinated and typosquatted npm packages in CI.
+author: khoi03
+
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  file:
+    description: Manifest or newline-delimited list to scan. Ignored when "packages" is set.
+    required: false
+    default: package.json
+  packages:
+    description: Space-separated package names to scan instead of a file.
+    required: false
+    default: ''
+  fail-on:
+    description: 'Exit non-zero at this level or above: safe | medium | high | critical | none.'
+    required: false
+    default: high
+  quiet:
+    description: Print only flagged packages plus a one-line summary.
+    required: false
+    default: 'true'
+  version:
+    description: 'slopshield version to run (an npm dist-tag or version). Use "local" to run the checked-out build.'
+    required: false
+    default: latest
+  working-directory:
+    description: Directory to run the scan in.
+    required: false
+    default: '.'
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      # Inputs are passed through the environment (never interpolated into the
+      # script) so untrusted values cannot inject shell commands.
+      env:
+        SLOPSHIELD_FILE: ${{ inputs.file }}
+        SLOPSHIELD_PACKAGES: ${{ inputs.packages }}
+        SLOPSHIELD_FAIL_ON: ${{ inputs.fail-on }}
+        SLOPSHIELD_QUIET: ${{ inputs.quiet }}
+        SLOPSHIELD_VERSION: ${{ inputs.version }}
+        SLOPSHIELD_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        set -f  # no globbing: package names are literal, never filename patterns
+
+        # Resolve the CLI. "local" runs the checked-out build (used by this
+        # repo's own self-test); anything else runs the published package.
+        if [ "$SLOPSHIELD_VERSION" = "local" ]; then
+          cli=(node "$SLOPSHIELD_ACTION_PATH/dist/cli.js")
+        else
+          cli=(npx --yes "slopshield@$SLOPSHIELD_VERSION")
+        fi
+
+        # Assemble the scan arguments from the environment. The explicit "scan"
+        # subcommand keeps a package named like a subcommand (e.g. "install")
+        # from being misrouted.
+        args=(scan)
+        if [ -n "$SLOPSHIELD_PACKAGES" ]; then
+          args+=($SLOPSHIELD_PACKAGES)
+        else
+          args+=(--file "$SLOPSHIELD_FILE")
+        fi
+        args+=(--fail-on "$SLOPSHIELD_FAIL_ON")
+        if [ "$SLOPSHIELD_QUIET" = "true" ]; then
+          args+=(--quiet)
+        fi
+
+        printf 'slopshield: %s\n' "${cli[*]} ${args[*]}"
+        exec "${cli[@]}" "${args[@]}"

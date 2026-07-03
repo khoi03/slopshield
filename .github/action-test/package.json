@@ -1,0 +1,9 @@
+{
+  "name": "slopshield-action-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Fixture manifest used only by the GitHub Action self-test.",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

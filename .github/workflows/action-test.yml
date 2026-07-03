@@ -1,0 +1,54 @@
+name: Action self-test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  action:
+    name: Dogfood the composite action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Build the current source so `version: local` runs this commit's CLI
+      # instead of whatever is published to npm.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      - name: Clean package name → passes
+        uses: ./
+        with:
+          version: local
+          packages: lodash
+          fail-on: high
+
+      - name: Manifest via --file → passes
+        uses: ./
+        with:
+          version: local
+          file: .github/action-test/package.json
+          fail-on: high
+
+      - name: Known typosquat → fails the step
+        id: risky
+        continue-on-error: true
+        uses: ./
+        with:
+          version: local
+          packages: crossenv
+          fail-on: medium
+
+      - name: Assert the risky scan failed
+        if: steps.risky.outcome != 'failure'
+        run: |
+          echo "::error::expected the crossenv scan to fail the step"
+          exit 1
