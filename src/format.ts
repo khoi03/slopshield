@@ -97,25 +97,32 @@ export function flaggedAnalyses(
   return analyses.filter((analysis) => analysis.level !== 'safe');
 }
 
-/** Risk buckets shown in the summary, in the order they are listed. */
-const SUMMARY_LEVELS: readonly RiskLevel[] = ['critical', 'high', 'medium'];
+/** Verdict buckets shown in the summary, in the order they are listed (safe last). */
+const SUMMARY_LEVELS: readonly RiskLevel[] = ['critical', 'high', 'medium', 'safe'];
 
 /**
- * One-line tally for the end of a scan, e.g. `5 checked — 1 critical, 2 high`.
- * Zero buckets are omitted; `unknown` is reported separately (dimmed); a clean
- * run reads `N checked — all safe`. Plain by default so `--json` is unaffected.
+ * One-line tally for the end of a scan, e.g.
+ * `6 checked — 1 critical, 2 high, 1 medium, 2 safe`. Buckets are colored by
+ * level and zero buckets are omitted; `unknown` is reported separately (dimmed).
+ * A fully clean run collapses to the reassuring `N checked — all safe`. Plain by
+ * default so `--json` is unaffected.
  */
 export function formatSummary(
   analyses: readonly PackageAnalysis[],
   palette: Palette = plainPalette,
 ): string {
   const counts = tallyLevels(analyses);
+  const total = analyses.length;
+  const head = palette.dim(`${total} checked`);
+
+  // Everything safe → a single reassuring line instead of "N safe".
+  if (total > 0 && counts.safe === total) return `${head} — ${palette.green('all safe')}`;
+
   const parts = SUMMARY_LEVELS.filter((level) => counts[level] > 0).map((level) =>
     levelPaint(palette, level)(`${counts[level]} ${level}`),
   );
   if (counts.unknown > 0) parts.push(palette.dim(`${counts.unknown} unknown`));
 
-  const head = palette.dim(`${analyses.length} checked`);
   const tail = parts.length > 0 ? parts.join(', ') : palette.green('all safe');
   return `${head} — ${tail}`;
 }

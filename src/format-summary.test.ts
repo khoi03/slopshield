@@ -17,20 +17,21 @@ test('formatSummary: empty input reports zero checked, all safe', () => {
   assert.equal(formatSummary([]), '0 checked — all safe');
 });
 
-test('formatSummary: tallies risk buckets in severity order, omitting zeros', () => {
+test('formatSummary: tallies buckets in severity order (safe last), omitting zeros', () => {
   const out = formatSummary([
     a('a', 'critical'),
     a('b', 'high'),
     a('c', 'high'),
     a('d', 'medium'),
     a('e', 'safe'),
+    a('f', 'safe'),
   ]);
 
-  assert.equal(out, '5 checked — 1 critical, 2 high, 1 medium');
+  assert.equal(out, '6 checked — 1 critical, 2 high, 1 medium, 2 safe');
 });
 
-test('formatSummary: counts unknown separately from risk buckets', () => {
-  assert.equal(formatSummary([a('a', 'safe'), a('b', 'unknown')]), '2 checked — 1 unknown');
+test('formatSummary: includes the safe count and unknown when mixed', () => {
+  assert.equal(formatSummary([a('a', 'safe'), a('b', 'unknown')]), '2 checked — 1 safe, 1 unknown');
 });
 
 test('formatSummary: is plain by default (no ANSI)', () => {

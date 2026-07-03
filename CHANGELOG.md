@@ -9,7 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - **Scan summary + `--quiet`** — multi-package scans (and any `--quiet` run) now
-  end with a one-line tally, e.g. `5 checked — 1 critical, 2 high, 1 medium`
+  end with a one-line tally, e.g. `6 checked — 1 critical, 2 high, 1 medium, 2 safe`
   (`all safe` when clean), colored by level. `--quiet` prints only flagged
   packages (hides `safe`, keeps `unknown`) plus the summary — ideal for CI logs.
   `--json` is unaffected (full set, no footer) and the exit code is always
