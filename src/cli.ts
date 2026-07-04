@@ -16,7 +16,9 @@ import { deriveExitCode, flaggedAnalyses, formatHuman, formatJson, formatSummary
 import { parseGuardArgs } from './guard/guard-args.ts';
 import { runGuard, runInstall } from './guard/runner.ts';
 import { shellInitSnippet, type SupportedShell } from './guard/shell-init.ts';
+import { runHook } from './hook/hook.ts';
 import { resolveInputs } from './inputs.ts';
+import { runMcpServer } from './mcp/server.ts';
 import { createRegistryClient } from './registry/client.ts';
 import type { FailOn } from './types.ts';
 
@@ -30,6 +32,8 @@ Usage:
   slopshield guard <pkg...>              Gate by exit code (for CI / shell integration)
   slopshield install <npm-args...>       Pre-check, then run "npm install <npm-args>"
   slopshield init-shell [bash|zsh|fish]  Print a shell function that auto-guards npm install
+  slopshield mcp                         Run as an MCP server (stdio) exposing a check_package tool
+  slopshield hook                        Claude Code PreToolUse hook: block risky agent npm installs
 
 Options (scan/guard):
   --file <path>      (scan) read names from a package.json or newline list
@@ -176,6 +180,10 @@ async function main(argv: readonly string[]): Promise<number> {
     return runInstall(rest, {}, { palette: paletteFor(process.stderr, noColorFlag) });
   }
   if (command === 'init-shell') return runInitShell(rest);
+  // The AI-agent guard surfaces speak their own protocols on stdin/stdout and
+  // take no CLI flags of their own.
+  if (command === 'mcp') return runMcpServer();
+  if (command === 'hook') return runHook();
   if (command === 'scan') return runScan(rest, noColorFlag);
 
   // Bare invocation (back-compat): treat all args as scan targets / --help.
