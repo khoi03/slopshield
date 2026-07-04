@@ -89,3 +89,23 @@ export const INSTALL_SUBCOMMANDS = ['install', 'i', 'add'] as const;
 export const EXIT_OK = 0;
 export const EXIT_BLOCKED = 1;
 export const EXIT_USAGE = 2;
+
+// --- AI-agent guard (Milestone 4): MCP server + Claude Code hook ------------
+
+/** Name reported to MCP clients in `serverInfo`. */
+export const MCP_SERVER_NAME = 'slopshield';
+
+/** The single tool the MCP server exposes. */
+export const MCP_TOOL_NAME = 'check_package';
+
+/** Latest MCP protocol revision we implement (sent when the client's is unknown). */
+export const MCP_PROTOCOL_VERSION = '2025-06-18';
+
+/** MCP protocol versions we accept during `initialize` (newest first). */
+export const MCP_SUPPORTED_PROTOCOL_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'] as const;
+
+/** Cap the packages checked per `check_package` call (bounds registry fan-out). */
+export const MCP_MAX_NAMES = 100;
+
+/** Drop any single stdin line longer than this (bytes) as malformed (DoS guard). */
+export const MCP_MAX_LINE_BYTES = 1_000_000;
