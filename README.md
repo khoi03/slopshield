@@ -153,6 +153,57 @@ By default it scans `package.json` and prints only flagged packages plus a summa
 
 The action runs the published CLI via `npx` (no extra install). Pin `version` for reproducible runs.
 
+## AI-agent guard
+
+AI coding agents are the biggest source of slopsquatting — they confidently suggest packages that don't exist. slopshield can sit between the agent and your registry so a hallucinated install is caught the moment it's proposed. Two integrations, both zero-dependency and built on the same engine:
+
+### MCP server
+
+Expose a `check_package` tool to any MCP-capable agent, so it can verify a name **before** suggesting or installing it:
+
+```bash
+slopshield mcp   # speaks MCP over stdio
+```
+
+Register it with your client. For Claude Code:
+
+```bash
+claude mcp add slopshield -- slopshield mcp
+```
+
+Or add it to your MCP client config directly:
+
+```json
+{
+  "mcpServers": {
+    "slopshield": { "command": "slopshield", "args": ["mcp"] }
+  }
+}
+```
+
+The agent calls `check_package` with one or more names and gets back a verdict (`safe`/`medium`/`high`/`critical`/`unknown`) and reasons for each.
+
+### Claude Code hook
+
+Block risky installs automatically with a [`PreToolUse` hook](https://docs.claude.com/en/docs/claude-code/hooks). Add this to `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "slopshield hook", "timeout": 10 }]
+      }
+    ]
+  }
+}
+```
+
+Now whenever the agent runs `npm install …`, slopshield checks the packages first. A `high`/`critical` package (e.g. a hallucinated name that doesn't exist) is **denied**, and the reason is fed back to the model so it can correct itself; a `medium` risk asks you to confirm; safe installs proceed silently. The threshold and an allowlist are read from `package.json#slopshield`.
+
+The hook is best-effort defense-in-depth, and it **fails open**: anything it can't confidently parse is allowed rather than blocked. It resolves quotes and backslash escapes, but by design it does *not* resolve runtime shell indirection — command substitution (`$(…)`, `` `…` ``) and variable expansion (`$VAR`) pass through unchecked — and it currently covers `npm` only (`npx`, yarn, and pnpm are on the roadmap). Pair it with the MCP server above for stronger coverage.
+
 ## Development
 
 ```bash

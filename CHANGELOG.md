@@ -6,6 +6,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **AI-agent guard.** Two new zero-dependency ways to stop AI agents from
+  installing hallucinated or typosquatted packages, both reusing the existing
+  detection engine:
+  - `slopshield mcp` — an MCP server (stdio) exposing a `check_package` tool so
+    any MCP-capable agent can verify names before suggesting or installing them.
+  - `slopshield hook` — a Claude Code `PreToolUse` hook that intercepts an
+    agent's `npm install`, denies `high`/`critical` packages (feeding the reason
+    back to the model), asks on `medium`, and allows safe installs. Honors
+    `package.json#slopshield` (fail-on threshold + allowlist) and fails open.
+
 ## [0.2.0] - 2026-07-04
 
 ### Added
