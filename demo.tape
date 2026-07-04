@@ -48,4 +48,10 @@ Sleep 400ms
 Enter
 Sleep 4s
 
+# --- 5. --quiet: only the flagged packages, plus a summary line (great for CI) ---
+Type "slopshield express lodash expresss crossenv --quiet"
+Sleep 400ms
+Enter
+Sleep 4s
+
 Sleep 1500ms
