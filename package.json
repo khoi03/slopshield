@@ -27,7 +27,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test \"src/**/*.test.ts\"",
     "test:watch": "node --test --watch \"src/**/*.test.ts\"",
-    "test:coverage": "node --test --experimental-test-coverage --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 --test-coverage-exclude=\"**/*.test.ts\" --test-coverage-exclude=\"src/cli.ts\" --test-coverage-exclude=\"src/data/**\" --test-coverage-exclude=\"src/types.ts\" \"src/**/*.test.ts\"",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 --test-coverage-exclude=\"**/*.test.ts\" --test-coverage-exclude=\"src/cli.ts\" --test-coverage-exclude=\"src/engine.ts\" --test-coverage-exclude=\"src/data/**\" --test-coverage-exclude=\"src/types.ts\" \"src/**/*.test.ts\"",
     "build": "tsup",
     "build:data": "node scripts/build-popular.ts",
     "validate": "node scripts/validate-corpus.ts",

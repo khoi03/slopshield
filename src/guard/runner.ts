@@ -1,12 +1,10 @@
 import { spawn } from 'node:child_process';
 
-import { analyzeNames } from '../analyzer.ts';
 import { createPalette, shouldColorize, type Palette } from '../color.ts';
 import { EXIT_BLOCKED, EXIT_OK, EXIT_USAGE } from '../config.ts';
-import { loadKnownSlop, loadPopular } from '../data/loader.ts';
+import { createDefaultAnalyze, type AnalyzeNames } from '../engine.ts';
 import { formatGuard } from '../format.ts';
-import { createRegistryClient } from '../registry/client.ts';
-import type { GuardConfig, GuardDecision, PackageAnalysis, Specifier } from '../types.ts';
+import type { GuardConfig, GuardDecision, Specifier } from '../types.ts';
 import type { ReadFile } from '../inputs.ts';
 import { resolveGuardConfig, type GuardFlags } from './config.ts';
 import { parseInstallArgs } from './install-args.ts';
@@ -18,7 +16,7 @@ import { normalizeSpecifier } from './specifier.ts';
 export type RunCommand = (command: string, args: readonly string[]) => Promise<number>;
 
 /** Analyzes package names. Injectable for tests (defaults to the live engine). */
-export type Analyze = (names: readonly string[]) => Promise<PackageAnalysis[]>;
+export type Analyze = AnalyzeNames;
 
 export interface GuardDeps {
   readonly analyze?: Analyze;
@@ -47,16 +45,6 @@ function defaultPalette(): Palette {
   return createPalette(
     shouldColorize({ isTTY: Boolean(process.stderr.isTTY), noColorFlag: false, env: process.env }),
   );
-}
-
-function defaultAnalyze(now?: number): Analyze {
-  return (names) =>
-    analyzeNames(names, {
-      client: createRegistryClient(),
-      popular: loadPopular(),
-      knownSlop: loadKnownSlop(),
-      now,
-    });
 }
 
 /** npm ships as `npm.cmd` on Windows. */
@@ -93,7 +81,7 @@ async function evaluate(
     .filter((s) => s.checkable && !config.allow.has(s.name))
     .map((s) => s.name);
 
-  const analyze = deps.analyze ?? defaultAnalyze(deps.now);
+  const analyze = deps.analyze ?? createDefaultAnalyze(deps.now);
   const analyses = await analyze(toCheck);
   return { decision: decide(analyses, config), unchecked, config };
 }
