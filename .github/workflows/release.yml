@@ -25,7 +25,10 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: npm
       - run: npm ci
-      # Trusted Publishing requires a recent npm (>= 11.5.1).
-      - run: npm install -g npm@latest
+      # Trusted Publishing requires npm >= 11.5.1. Pin to the last stable 11.x
+      # rather than @latest: npm 12.0.0 ships a broken provenance path
+      # (`Cannot find module 'sigstore'` from libnpmpublish), which fails
+      # `npm publish --provenance`. Bump deliberately once 12.x is fixed.
+      - run: npm install -g npm@11.18.0
       - name: Publish to npm (Trusted Publishing + provenance)
         run: npm publish --provenance --access public
