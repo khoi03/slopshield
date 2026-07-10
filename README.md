@@ -135,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: khoi03/slopshield@v0.2.0
+      - uses: khoi03/slopshield@v0.3.0
         with:
           fail-on: high        # exit non-zero at this level or above
 ```

@@ -54,4 +54,40 @@ Sleep 400ms
 Enter
 Sleep 4s
 
+# --- 6. NEW in 0.3.0: the AI-agent guard — a hallucinated install, blocked live ---
+Type "# 0.3.0: route every npm install your AI agent runs through slopshield first"
+Enter
+Sleep 1200ms
+
+# Stage the PreToolUse payload an agent would send (hidden — keeps the demo clean,
+# and side-steps vhs quote escaping by writing the JSON via a quoted heredoc).
+Hide
+Type "cat > agent-install.json <<'EOF'"
+Enter
+Type '{"tool_name":"Bash","tool_input":{"command":"npm install react-async-hyperstore-provider-x9qz"}}'
+Enter
+Type "EOF"
+Enter
+Show
+
+Type "# the agent proposes installing a package it hallucinated:"
+Enter
+Sleep 900ms
+Type "slopshield hook < agent-install.json"
+Sleep 400ms
+Enter
+Sleep 3500ms
+Type "# blocked — the reason is handed back to the model so it self-corrects."
+Enter
+Sleep 1200ms
+Type "# (also new: slopshield mcp exposes a check_package tool to any MCP agent)"
+Enter
+Sleep 1500ms
+
+# clean up the staged payload
+Hide
+Type "rm -f agent-install.json"
+Enter
+Show
+
 Sleep 1500ms
